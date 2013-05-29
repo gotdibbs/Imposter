@@ -104,6 +104,17 @@ namespace Imposter
 
         public void StartFiddler()
         {
+            if (_currentProfile == null)
+            {
+                MessageBox.Show("In order to start the proxy, you must first select a profile.");
+                return;
+            }
+            if (_currentProfile.Name == Profile.DefaultName)
+            {
+                MessageBox.Show("You must first edit and save this profile before being able to start the proxy.");
+                return;
+            }
+
             _isRunning = true;
             ToggleFields();
 
@@ -152,9 +163,9 @@ namespace Imposter
                 DecryptSsl = false
             });
             Profiles.ItemsSource = _settings.Profiles;
-            if (_settings != null && _settings.Profiles.Count > 1)
+            if (_settings != null && _settings.Profiles.Count > 0)
             {
-                Profiles.SelectedIndex = 1;
+                Profiles.SelectedIndex = _settings.Profiles.Count == 1 ? 0 : 1;
             }
         }
 
