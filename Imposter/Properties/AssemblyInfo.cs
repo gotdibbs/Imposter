@@ -8,9 +8,9 @@ using System.Windows;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("Imposter")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Imposter looks for requests matching a base URL and then swaps them for a local file.")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("William Dibbern")]
 [assembly: AssemblyProduct("Imposter")]
 [assembly: AssemblyCopyright("Copyright ©  2013")]
 [assembly: AssemblyTrademark("")]
