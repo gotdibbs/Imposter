@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <asmv1:assembly xsi:schemaLocation="urn:schemas-microsoft-com:asm.v1 assembly.adaptive.xsd" manifestVersion="1.0" xmlns:asmv1="urn:schemas-microsoft-com:asm.v1" xmlns="urn:schemas-microsoft-com:asm.v2" xmlns:asmv2="urn:schemas-microsoft-com:asm.v2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:co.v1="urn:schemas-microsoft-com:clickonce.v1" xmlns:asmv3="urn:schemas-microsoft-com:asm.v3" xmlns:dsig="http://www.w3.org/2000/09/xmldsig#" xmlns:co.v2="urn:schemas-microsoft-com:clickonce.v2">
-  <asmv1:assemblyIdentity name="Imposter.exe" version="1.0.0.3" publicKeyToken="d06c730dfab5f4fe" language="neutral" processorArchitecture="msil" type="win32" />
+  <asmv1:assemblyIdentity name="Imposter.exe" version="1.0.0.4" publicKeyToken="d06c730dfab5f4fe" language="neutral" processorArchitecture="msil" type="win32" />
   <description asmv2:iconFile="Imposter.ico" xmlns="urn:schemas-microsoft-com:asm.v1" />
   <application />
   <entryPoint>
@@ -55,14 +55,14 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="Imposter.exe" size="764416">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="Imposter.exe" size="780800">
       <assemblyIdentity name="Imposter" version="1.0.0.0" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>rhCeQlT3W1XEW4JWAM5Wsgie7Nsune1InePPRKhwOvU=</dsig:DigestValue>
+        <dsig:DigestValue>PchSCzx8UnAwsh73g3HBKVLuRlA7CSDcfMu9Y0G+gig=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
@@ -90,13 +90,13 @@
       </hash>
     </dependentAssembly>
   </dependency>
-  <file name="Imposter.exe.config" size="187">
+  <file name="Imposter.exe.config" size="182">
     <hash>
       <dsig:Transforms>
         <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
       </dsig:Transforms>
       <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-      <dsig:DigestValue>xm4bo26HQ0LNVwz1vdPYtzhkpMnp2AI5i+f0b+OahTI=</dsig:DigestValue>
+      <dsig:DigestValue>PbQiHFOih9uz3RPvvsStiPKcsu3PE8/gyCn2QGUyyf4=</dsig:DigestValue>
     </hash>
   </file>
   <file name="Imposter.ico" size="370070">
@@ -108,22 +108,22 @@
       <dsig:DigestValue>DMxvEUylhbBfvdpbyzELPEdadQ7PrscW+0ZTFo5U1cw=</dsig:DigestValue>
     </hash>
   </file>
-  <file name="js\imposter.js" size="1318">
+  <file name="js\imposter.js" size="1267">
     <hash>
       <dsig:Transforms>
         <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
       </dsig:Transforms>
       <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-      <dsig:DigestValue>cae3CbY2onKveb2vFStgOw+oDfMADA85ldhzdZRGYKw=</dsig:DigestValue>
+      <dsig:DigestValue>nDuOOu4rYjEnBIjgKCzGXj+dq+5Po/DCQQIcskqE7Cs=</dsig:DigestValue>
     </hash>
   </file>
-  <file name="settings.json" size="27">
+  <file name="settings.json" size="25">
     <hash>
       <dsig:Transforms>
         <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
       </dsig:Transforms>
       <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-      <dsig:DigestValue>yVScMqfHIyYYT42V7/6Fszq8hRRkcx3V/PdK7RdtfBQ=</dsig:DigestValue>
+      <dsig:DigestValue>Etuk7l3e8VJ/+p5tjfCl5N+dYNUQeacWXCT33xG/oRU=</dsig:DigestValue>
     </hash>
   </file>
-<publisherIdentity name="CN=SONOMAPARTNERS\wdibbern" issuerKeyHash="f79b7642a982f3b0d63a4d22e1a4f696896dbac3" /><Signature Id="StrongNameSignature" xmlns="http://www.w3.org/2000/09/xmldsig#"><SignedInfo><CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#" /><SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha256" /><Reference URI=""><Transforms><Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature" /><Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#" /></Transforms><DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" /><DigestValue>nIqO6Fd9Oy17uQ6May1d1pHtMIdV7qM+4d6PpLP4mVc=</DigestValue></Reference></SignedInfo><SignatureValue>HLDF6TQ3bXy0U9ZrN4/ipI3PD2loEldKNOu/2IqXvEKZOMIAAa2Fuvyy0tBew5/6Wfwd6S5QshGVXHPgO2m0/I3ofuzSNDff/FoHy0txeTgD27Gdc2sf7a668AQw+0w0Rv/RNK8sn/ge+nAePdm8gCrAFcGku1REVZLtRoSFWaE=</SignatureValue><KeyInfo Id="StrongNameKeyInfo"><KeyValue><RSAKeyValue><Modulus>vbZP/+vBU7qKa15SjfxHcPdkuAQU/04XF7lmxvq0W+ROsE2U50VvWkmxTlKXuP4QKxsUfArazvfMisQAi9zaC3rkLxnx5I2M1uJzJMeKZmmEwqnsZYHh3sIJ5hrvdVpte5YNHgmN1avgsDOi8hUvQ3NqS1tYFbtwd/30VQ4qEXU=</Modulus><Exponent>AQAB</Exponent></RSAKeyValue></KeyValue><msrel:RelData xmlns:msrel="http://schemas.microsoft.com/windows/rel/2005/reldata"><r:license xmlns:r="urn:mpeg:mpeg21:2003:01-REL-R-NS" xmlns:as="http://schemas.microsoft.com/windows/pki/2005/Authenticode"><r:grant><as:ManifestInformation Hash="5799f8b3a48fdee13ea3ee558730ed91d65d2d6b8c0eb97b2d3b7d57e88e8a9c" Description="" Url=""><as:assemblyIdentity name="Imposter.exe" version="1.0.0.3" publicKeyToken="d06c730dfab5f4fe" language="neutral" processorArchitecture="msil" type="win32" /></as:ManifestInformation><as:SignedBy /><as:AuthenticodePublisher><as:X509SubjectName>CN=SONOMAPARTNERS\wdibbern</as:X509SubjectName></as:AuthenticodePublisher></r:grant><r:issuer><Signature Id="AuthenticodeSignature" xmlns="http://www.w3.org/2000/09/xmldsig#"><SignedInfo><CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#" /><SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha256" /><Reference URI=""><Transforms><Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature" /><Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#" /></Transforms><DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" /><DigestValue>4YsbM5gjJ/UL4GUPKIO2yT+DBdM7XPVF/1Fs6b5lR/E=</DigestValue></Reference></SignedInfo><SignatureValue>LMbuaHKsPh4b09JPd+ccqszfNKiLRP4BlDEP6GdWdOSk0Y5t7u3ezUjgl6lvplda4jTdq06JZI1d3oDHk8Lhkm3PmqIeslTN4WbZBO8N5bxFepuzYJVnzqjhXtTYXy4OShgb3WEXMWGSzNozSw4qpdM96mcj4x5ewuw3Kx64nIo=</SignatureValue><KeyInfo><KeyValue><RSAKeyValue><Modulus>vbZP/+vBU7qKa15SjfxHcPdkuAQU/04XF7lmxvq0W+ROsE2U50VvWkmxTlKXuP4QKxsUfArazvfMisQAi9zaC3rkLxnx5I2M1uJzJMeKZmmEwqnsZYHh3sIJ5hrvdVpte5YNHgmN1avgsDOi8hUvQ3NqS1tYFbtwd/30VQ4qEXU=</Modulus><Exponent>AQAB</Exponent></RSAKeyValue></KeyValue><X509Data><X509Certificate>MIIB9TCCAV6gAwIBAgIQLf3565LoKLdJaRGVuA6UQDANBgkqhkiG9w0BAQsFADA5MTcwNQYDVQQDHi4AUwBPAE4ATwBNAEEAUABBAFIAVABOAEUAUgBTAFwAdwBkAGkAYgBiAGUAcgBuMB4XDTEzMDUyOTIxMDYzOFoXDTE0MDUzMDAzMDYzOFowOTE3MDUGA1UEAx4uAFMATwBOAE8ATQBBAFAAQQBSAFQATgBFAFIAUwBcAHcAZABpAGIAYgBlAHIAbjCBnzANBgkqhkiG9w0BAQEFAAOBjQAwgYkCgYEAvbZP/+vBU7qKa15SjfxHcPdkuAQU/04XF7lmxvq0W+ROsE2U50VvWkmxTlKXuP4QKxsUfArazvfMisQAi9zaC3rkLxnx5I2M1uJzJMeKZmmEwqnsZYHh3sIJ5hrvdVpte5YNHgmN1avgsDOi8hUvQ3NqS1tYFbtwd/30VQ4qEXUCAwEAATANBgkqhkiG9w0BAQsFAAOBgQBV5zz601dR6ua9CH8dysGHXn9yscS6ftgKjnjEPiyJGEmnwxkqz4k399jEcCh6y3DhUehGweF6AEu1b+wPmBi/uRMEJmJqw1aa87JGv7IHK+WuXPbmMRGaHSk1ZTK7/LLPInpdD33yojw9A7Q0nqF/iAEcJKso8QSIFCyuGpPC0Q==</X509Certificate></X509Data></KeyInfo></Signature></r:issuer></r:license></msrel:RelData></KeyInfo></Signature></asmv1:assembly>
+<publisherIdentity name="CN=SONOMAPARTNERS\wdibbern" issuerKeyHash="f79b7642a982f3b0d63a4d22e1a4f696896dbac3" /><Signature Id="StrongNameSignature" xmlns="http://www.w3.org/2000/09/xmldsig#"><SignedInfo><CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#" /><SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha256" /><Reference URI=""><Transforms><Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature" /><Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#" /></Transforms><DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" /><DigestValue>OLMKRlZN2jnKn8D72DQW0HYXKnmHzpKIkXUj/WvmGNc=</DigestValue></Reference></SignedInfo><SignatureValue>h9B/YG438EjuDfqmaqZqjo3ANxp+KQSIP1q9nLx4EvWUiWy871a52Ox4+l+ka6VKB9FPiPcQ0SylEZN+CwdJgJLiABnvi5wD3s2N+h13DkN7Zsht5BHCYxvR+ZVc1uVOyzKHTXr7+AYkdvTE+gzoJ/bYeYaTRhCiFqSo3sHe754=</SignatureValue><KeyInfo Id="StrongNameKeyInfo"><KeyValue><RSAKeyValue><Modulus>vbZP/+vBU7qKa15SjfxHcPdkuAQU/04XF7lmxvq0W+ROsE2U50VvWkmxTlKXuP4QKxsUfArazvfMisQAi9zaC3rkLxnx5I2M1uJzJMeKZmmEwqnsZYHh3sIJ5hrvdVpte5YNHgmN1avgsDOi8hUvQ3NqS1tYFbtwd/30VQ4qEXU=</Modulus><Exponent>AQAB</Exponent></RSAKeyValue></KeyValue><msrel:RelData xmlns:msrel="http://schemas.microsoft.com/windows/rel/2005/reldata"><r:license xmlns:r="urn:mpeg:mpeg21:2003:01-REL-R-NS" xmlns:as="http://schemas.microsoft.com/windows/pki/2005/Authenticode"><r:grant><as:ManifestInformation Hash="d718e66bfd2375918892ce87792a1776d01634d8fbc09fca39da4d56460ab338" Description="" Url=""><as:assemblyIdentity name="Imposter.exe" version="1.0.0.4" publicKeyToken="d06c730dfab5f4fe" language="neutral" processorArchitecture="msil" type="win32" /></as:ManifestInformation><as:SignedBy /><as:AuthenticodePublisher><as:X509SubjectName>CN=SONOMAPARTNERS\wdibbern</as:X509SubjectName></as:AuthenticodePublisher></r:grant><r:issuer><Signature Id="AuthenticodeSignature" xmlns="http://www.w3.org/2000/09/xmldsig#"><SignedInfo><CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#" /><SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha256" /><Reference URI=""><Transforms><Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature" /><Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#" /></Transforms><DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" /><DigestValue>AbRl41tIaPiDGT3wLy8zlNMXd+gHAoh+EkUAph5khCo=</DigestValue></Reference></SignedInfo><SignatureValue>CczrJFqTDdTqTIEoRiCDXfkW2ur+wnJMgNnFifkXoQs04EEgWcgcW3vUjb87Fq0389SdRlS1+hRtQV0oH/pWGpRluFdktUIjIgZz98eP4vwxlom7qyXKAc/suqgcmOn4ft3qB/lZVF4RJeEEDcu0821y2tXyW5Zrv87sf+SQ9hs=</SignatureValue><KeyInfo><KeyValue><RSAKeyValue><Modulus>vbZP/+vBU7qKa15SjfxHcPdkuAQU/04XF7lmxvq0W+ROsE2U50VvWkmxTlKXuP4QKxsUfArazvfMisQAi9zaC3rkLxnx5I2M1uJzJMeKZmmEwqnsZYHh3sIJ5hrvdVpte5YNHgmN1avgsDOi8hUvQ3NqS1tYFbtwd/30VQ4qEXU=</Modulus><Exponent>AQAB</Exponent></RSAKeyValue></KeyValue><X509Data><X509Certificate>MIIB9TCCAV6gAwIBAgIQLf3565LoKLdJaRGVuA6UQDANBgkqhkiG9w0BAQsFADA5MTcwNQYDVQQDHi4AUwBPAE4ATwBNAEEAUABBAFIAVABOAEUAUgBTAFwAdwBkAGkAYgBiAGUAcgBuMB4XDTEzMDUyOTIxMDYzOFoXDTE0MDUzMDAzMDYzOFowOTE3MDUGA1UEAx4uAFMATwBOAE8ATQBBAFAAQQBSAFQATgBFAFIAUwBcAHcAZABpAGIAYgBlAHIAbjCBnzANBgkqhkiG9w0BAQEFAAOBjQAwgYkCgYEAvbZP/+vBU7qKa15SjfxHcPdkuAQU/04XF7lmxvq0W+ROsE2U50VvWkmxTlKXuP4QKxsUfArazvfMisQAi9zaC3rkLxnx5I2M1uJzJMeKZmmEwqnsZYHh3sIJ5hrvdVpte5YNHgmN1avgsDOi8hUvQ3NqS1tYFbtwd/30VQ4qEXUCAwEAATANBgkqhkiG9w0BAQsFAAOBgQBV5zz601dR6ua9CH8dysGHXn9yscS6ftgKjnjEPiyJGEmnwxkqz4k399jEcCh6y3DhUehGweF6AEu1b+wPmBi/uRMEJmJqw1aa87JGv7IHK+WuXPbmMRGaHSk1ZTK7/LLPInpdD33yojw9A7Q0nqF/iAEcJKso8QSIFCyuGpPC0Q==</X509Certificate></X509Data></KeyInfo></Signature></r:issuer></r:license></msrel:RelData></KeyInfo></Signature></asmv1:assembly>

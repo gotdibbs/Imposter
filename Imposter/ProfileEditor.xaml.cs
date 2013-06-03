@@ -2,6 +2,8 @@
 using Imposter.Model;
 using MahApps.Metro.Controls;
 using System;
+using System.Linq;
+using System.Collections.Generic;
 using System.Windows;
 
 namespace Imposter
@@ -21,7 +23,8 @@ namespace Imposter
                     LocalDirectory = Local.Text,
                     RemoteUrl = Remote.Text,
                     Port = int.Parse(Port.Text),
-                    DecryptSsl = DecryptSsl.IsChecked != null ? DecryptSsl.IsChecked.Value : false
+                    DecryptSsl = DecryptSsl.IsChecked != null ? DecryptSsl.IsChecked.Value : false,
+                    Overrides = new List<Override>(Overrides.ItemsSource as IEnumerable<Override>)
                 };
             }
             set
@@ -31,6 +34,7 @@ namespace Imposter
                 Remote.Text = value.RemoteUrl;
                 Port.Text = value.Port.ToString();
                 DecryptSsl.IsChecked = value.DecryptSsl;
+                Overrides.ItemsSource = value.Overrides;
             }
         }
 
@@ -43,6 +47,8 @@ namespace Imposter
             Save.Click += Save_Click;
             Cancel.Click += Cancel_Click;
             DecryptSsl.Checked += DecryptSsl_Checked;
+            //AddOverride.Click += AddOverride_Click;
+            //DeleteOverride.Click += DeleteOverride_Click;
         }
 
         private void DecryptSsl_Checked(object sender, RoutedEventArgs e)
@@ -68,11 +74,6 @@ namespace Imposter
             }
         }
 
-        private void Cancel_Click(object sender, RoutedEventArgs e)
-        {
-            this.DialogResult = false;
-        }
-
         private void Save_Click(object sender, RoutedEventArgs e)
         {
             if (string.IsNullOrEmpty(Name.Text) || string.IsNullOrEmpty(Local.Text) || 
@@ -83,6 +84,11 @@ namespace Imposter
             }
 
             DialogResult = true;
+        }
+
+        private void Cancel_Click(object sender, RoutedEventArgs e)
+        {
+            this.DialogResult = false;
         }
     }
 }

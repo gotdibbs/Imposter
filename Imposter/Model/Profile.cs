@@ -22,6 +22,9 @@ namespace Imposter.Model
         [DataMember(Name = "port")]
         public int Port { get; set; }
 
+        [DataMember(Name = "overrides")]
+        public List<Override> Overrides { get; set; }
+
         [IgnoreDataMember]
         public static string DefaultName = " -- New Profile --";
 

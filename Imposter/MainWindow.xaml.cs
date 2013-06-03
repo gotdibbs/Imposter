@@ -5,6 +5,7 @@ using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using Imposter.Model;
+using System.Collections.Generic;
 
 namespace Imposter
 {
@@ -160,12 +161,13 @@ namespace Imposter
                 RemoteUrl = string.Empty,
                 LocalDirectory = string.Empty,
                 Port = 8877,
-                DecryptSsl = false
+                DecryptSsl = false,
+                Overrides = new List<Override>()
             });
             Profiles.ItemsSource = _settings.Profiles;
             if (_settings != null && _settings.Profiles.Count > 0)
             {
-                Profiles.SelectedIndex = _settings.Profiles.Count == 1 ? 0 : 1;
+                Profiles.SelectedIndex = _settings.Profiles.Count == 1 ? 0 : _settings.Profiles.Count - 1;
             }
         }
 
@@ -173,6 +175,26 @@ namespace Imposter
         {
             int index = fullString.IndexOf(subString);
             return fullString.Substring(index + subString.Length);
+        }
+
+        private string GetLocalFilePath(string urlFragment)
+        {
+            var path = _currentProfile.LocalDirectory + @"\" + urlFragment.Replace("/", @"\");
+
+            if (File.Exists(path))
+            {
+                return path;
+            }
+
+            foreach (var ovr in _currentProfile.Overrides)
+            {
+                if (urlFragment.Contains(ovr.RemoteFile.ToLower()) && File.Exists(ovr.LocalFile))
+                {
+                    return ovr.LocalFile;
+                }
+            }
+
+            return string.Empty;
         }
 
         private void ToggleFields()
@@ -190,8 +212,8 @@ namespace Imposter
             if (fullString.Contains(_currentProfile.RemoteUrl.ToLower()))
             {
                 fullString = GetStringAfterSubString(fullString, _currentProfile.RemoteUrl.ToLower()).Split(new char[] { '?' })[0];
-                string path = _currentProfile.LocalDirectory + @"\" + fullString.Replace("/", @"\");
-                if (File.Exists(path))
+                string path = GetLocalFilePath(fullString);
+                if (!string.IsNullOrEmpty(path))
                 {
                     oSession.utilCreateResponseAndBypassServer();
                     oSession.LoadResponseFromFile(path);
@@ -220,12 +242,11 @@ namespace Imposter
 
         private void FiddlerApplication_BeforeResponse(Session oSession)
         {
-            // TODO: reloader script injector
-            string fullString = oSession.fullUrl.ToLower();
+            var fullString = oSession.fullUrl.ToLower();
             if (fullString.Contains(_currentProfile.RemoteUrl.ToLower()))
             {
                 oSession.utilDecodeResponse();
-                oSession.utilReplaceInResponse("</body>", "<script type='text/javascript' src='Imposter.js'></script></body>");
+                bool replaced = oSession.utilReplaceInResponse("</body>", "<script type='text/javascript' src='imposter.js'></script></body>");
             }
         }
 
