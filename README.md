@@ -4,7 +4,7 @@ Imposter
 Imposter looks for requests matching a base URL and then swaps them for a local file.
 
 >
-<img alt="ScreenShot" src="https://raw.github.com/gotdibbs/Meetings/master/Screenshot-main.png" style="border: 1px solid #444;" />
+<img alt="ScreenShot" src="https://raw.github.com/gotdibbs/Imposter/master/Screenshot-main.png" style="border: 1px solid #444;" />
 
 ### Installation
 
@@ -20,4 +20,4 @@ Imposter looks for requests matching a base URL and then swaps them for a local 
 6. **Overrides:** A listing of specific hard coded fallbacks for when a requested resource is unable to be located. Very helpful for hot swapping minified for unminified files for debugging.
 
 >
-<img alt="ScreenShot" src="https://raw.github.com/gotdibbs/Meetings/master/Screenshot-profile.png" style="border: 1px solid #444;" />
+<img alt="ScreenShot" src="https://raw.github.com/gotdibbs/Imposter/master/Screenshot-profile.png" style="border: 1px solid #444;" />
