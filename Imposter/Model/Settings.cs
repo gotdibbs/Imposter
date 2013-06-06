@@ -19,10 +19,25 @@ namespace Imposter.Model
         {
             try
             {
-                var settingsJson = File.ReadAllText("settings.json");
-                var json = new DataContractJsonSerializer(typeof(ImposterSettings));
-                var stream = new MemoryStream(Encoding.UTF8.GetBytes(settingsJson));
-                return (Model.ImposterSettings)json.ReadObject(stream);
+                if (File.Exists("settings.json"))
+                {
+                    var settingsJson = File.ReadAllText("settings.json");
+                    var json = new DataContractJsonSerializer(typeof(ImposterSettings));
+                    var stream = new MemoryStream(Encoding.UTF8.GetBytes(settingsJson));
+                    return (Model.ImposterSettings)json.ReadObject(stream);
+                }
+                else
+                {
+                    try
+                    {
+                        File.WriteAllText("settings.json", "{ \"profiles\": [] }");
+                        return Load();
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("A problem was encountered while attempting to create the settings file. Detail: " + ex.Message);
+                    }
+                }
             }
             catch (Exception ex)
             {
