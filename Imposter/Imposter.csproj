@@ -29,7 +29,7 @@
     <InstallUrl>https://raw.github.com/gotdibbs/Imposter/master/ClickOnce/</InstallUrl>
     <CreateWebPageOnPublish>true</CreateWebPageOnPublish>
     <WebPage>publish.htm</WebPage>
-    <ApplicationRevision>5</ApplicationRevision>
+    <ApplicationRevision>6</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -122,6 +122,7 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Model\Match.cs" />
     <Compile Include="Model\Override.cs" />
     <Compile Include="Model\Profile.cs" />
     <Compile Include="Model\Settings.cs" />

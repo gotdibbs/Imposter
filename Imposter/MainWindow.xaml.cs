@@ -6,6 +6,7 @@ using System.Windows;
 using System.Windows.Controls;
 using Imposter.Model;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace Imposter
 {
@@ -21,9 +22,20 @@ namespace Imposter
         private FileSystemWatcher _watcher = null;
         private bool _hasChanges = false;
 
+        private ObservableCollection<Match> _matches = new ObservableCollection<Match>();
+
+        public ObservableCollection<Match> Matches
+        {
+            get { return _matches; }
+            set { _matches = value; }
+        }
+
         public MainWindow()
         {
             InitializeComponent();
+
+            // Initialize collections
+            RecentMatches.ItemsSource = Matches;
 
             // Set default enabled/disabled state for controls
             ToggleFields();
@@ -45,10 +57,15 @@ namespace Imposter
         {
             if (!_isRunning)
             {
+                RecentMatchesBox.Visibility = Visibility.Visible;
+                Matches.Clear();
+
                 StartFiddler();
             }
             else
             {
+                RecentMatchesBox.Visibility = Visibility.Collapsed;
+
                 StopFiddler();
             }
         }
@@ -217,6 +234,8 @@ namespace Imposter
                 {
                     oSession.utilCreateResponseAndBypassServer();
                     oSession.LoadResponseFromFile(path);
+
+                    PushItem(path);
                 }
             }
             if (fullString.EndsWith("imposter.js"))
@@ -248,6 +267,22 @@ namespace Imposter
                 oSession.utilDecodeResponse();
                 bool replaced = oSession.utilReplaceInResponse("</body>", "<script type='text/javascript' src='imposter.js'></script></body>");
             }
+        }
+
+        private void PushItem(string path)
+        {
+            Dispatcher.BeginInvoke(new Action(() =>
+            {
+                lock (Matches)
+                {
+                    if (Matches.Count > 200)
+                    {
+                        Matches.RemoveAt(200);
+                    }
+
+                    Matches.Insert(0, new Match { FileName = Path.GetFileName(path) });
+                }
+            }));
         }
 
         private void FileWatchUpdate(object sender, FileSystemEventArgs e)
