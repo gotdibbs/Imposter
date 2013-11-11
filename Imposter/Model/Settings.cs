@@ -19,9 +19,14 @@ namespace Imposter.Model
         {
             try
             {
-                if (File.Exists("settings.json"))
+                var localAppData = Environment.GetFolderPath(
+                    Environment.SpecialFolder.LocalApplicationData);
+                var userFilePath = Path.Combine(localAppData, "GotDibbs", "Imposter");
+                var settingsPath = Path.Combine(userFilePath, "settings.json");
+
+                if (File.Exists(settingsPath))
                 {
-                    var settingsJson = File.ReadAllText("settings.json");
+                    var settingsJson = File.ReadAllText(settingsPath);
                     var json = new DataContractJsonSerializer(typeof(ImposterSettings));
                     var stream = new MemoryStream(Encoding.UTF8.GetBytes(settingsJson));
                     return (Model.ImposterSettings)json.ReadObject(stream);
@@ -30,7 +35,12 @@ namespace Imposter.Model
                 {
                     try
                     {
-                        File.WriteAllText("settings.json", "{ \"profiles\": [] }");
+                        if (!Directory.Exists(userFilePath))
+                        {
+                            Directory.CreateDirectory(userFilePath);
+                        }
+
+                        File.WriteAllText(settingsPath, "{ \"profiles\": [] }");
                         return Load();
                     }
                     catch (Exception ex)
@@ -51,6 +61,11 @@ namespace Imposter.Model
         {
             try
             {
+                var localAppData = Environment.GetFolderPath(
+                    Environment.SpecialFolder.LocalApplicationData);
+                var userFilePath = Path.Combine(localAppData, "GotDibbs", "Imposter");
+                var settingsPath = Path.Combine(userFilePath, "settings.json");
+
                 // Remove all 'blank' settings
                 this.Profiles = this.Profiles.Where(p => p.Name != Profile.DefaultName).ToList();
 

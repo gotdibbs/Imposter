@@ -10,7 +10,7 @@ using System.Windows;
 [assembly: AssemblyTitle("Imposter")]
 [assembly: AssemblyDescription("Imposter looks for requests matching a base URL and then swaps them for a local file.")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("William Dibbern")]
+[assembly: AssemblyCompany("GotDibbs")]
 [assembly: AssemblyProduct("Imposter")]
 [assembly: AssemblyCopyright("Copyright ©  2013")]
 [assembly: AssemblyTrademark("")]
