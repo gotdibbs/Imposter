@@ -183,6 +183,20 @@
             Builds a string from an ALPN List of strings
             </summary>
         </member>
+        <member name="M:Fiddler.HTTPSUtilities.GetECCCurvesAsString(System.Byte[])">
+            <summary>
+            List defined ECC Curves from RFC4492
+            </summary>
+            <param name="eccCurves"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Fiddler.HTTPSUtilities.GetECCPointFormatsAsString(System.Byte[])">
+            <summary>
+            List defined ECC Point Formats from RFC4492
+            </summary>
+            <param name="eccPoints"></param>
+            <returns></returns>
+        </member>
         <member name="M:Fiddler.HTTPSUtilities.HTTPSVersionToString(System.Int32,System.Int32)">
             <summary>
             Converts a HTTPS version to a "Major.Minor (Friendly)" string
@@ -196,12 +210,14 @@
         <member name="F:Fiddler.HTTPSClientHello.dictTLSCipherSuites">
             <summary>
             Map cipher id numbers to names. See http://www.iana.org/assignments/tls-parameters/
+            Format is PROTOCOL_KEYAGREEMENT_AUTHENTICATIONMECHANISM_CIPHER_MACPRIMITIVE
             </summary>
         </member>
         <member name="M:Fiddler.HTTPSClientHello.ParseClientHelloExtension(System.Int32,System.Byte[])">
             <summary>
             Parse a single extension using the list from http://tools.ietf.org/html/rfc6066
             http://www.iana.org/assignments/tls-extensiontype-values/tls-extensiontype-values.xml
+            https://src.chromium.org/viewvc/chrome/trunk/src/net/third_party/nss/ssl/sslt.h
             </summary>
             <param name="iExtType"></param>
             <param name="arrData"></param>
@@ -229,6 +245,13 @@
             The Session object manages the complete HTTP session including the UI listitem, the ServerChatter, and the ClientChatter.
             </summary>
         </member>
+        <member name="F:Fiddler.Session.bTrySPNTokenObject">
+            <summary>
+            Should we try to use the SPNToken type?
+            Cached for performance reasons.
+            ISSUE: It's technically possible to use FiddlerCorev2/v3 on .NET/4.5 but we won't set this field if you do that.
+            </summary>
+        </member>
         <member name="F:Fiddler.Session.__WebRequestForAuth">
             <summary>
             Sorta hacky, we may use a .NET WebRequest object to generate a valid NTLM/Kerberos response if the server
@@ -239,6 +262,13 @@
             <summary>
             Used if the Session is bound to a WebSocket or CONNECTTunnel
             </summary>
+        </member>
+        <member name="M:Fiddler.Session.UNSTABLE_SetBitFlag(Fiddler.SessionFlags,System.Boolean)">
+            <summary>
+            DO NOT USE. TEMPORARY WHILE REFACTORING VISIBILITY OF MEMBERS
+            </summary>
+            <param name="FlagsToSet"></param>
+            <param name="b"></param>
         </member>
         <member name="M:Fiddler.Session.SetBitFlag(Fiddler.SessionFlags,System.Boolean)">
             <summary>
@@ -344,16 +374,22 @@
             <param name="sFilename"></param>
             <returns></returns>
         </member>
+        <member name="M:Fiddler.Session._GetSuggestedFilenameExt">
+            <summary>
+            Examines the MIME type, and if ambiguous, returns sniffs the body.
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:Fiddler.Session.FireContinueTransaction(Fiddler.Session,Fiddler.Session,Fiddler.ContinueTransactionReason)">
             <summary>
             Notify extensions if this Session naturally led to another (e.g. due to redirect chasing or Automatic Authentication)
             </summary>
-            <param name="oOrig">The original session</param>
+            <param name="oOrig">The original session (typically == this, but maybe not in multiple-hops?)</param>
             <param name="oNew">The new session created</param>
         </member>
         <member name="M:Fiddler.Session.ToHTMLFragment(System.Boolean)">
             <summary>
-            Returns HTML representing the session. Call Utilities.StringToCF_HTML on the result of this function before placing it on the clipboard.
+            Returns HTML representing the Session. Call Utilities.StringToCF_HTML on the result of this function before placing it on the clipboard.
             </summary>
             <param name="HeadersOnly">TRUE if only the headers should be copied.</param>
             <returns>A HTML-formatted fragment representing the current session.</returns>
@@ -458,14 +494,15 @@
         </member>
         <member name="M:Fiddler.Session.SaveRequest(System.String,System.Boolean)">
             <summary>
-            Save the request to a file; the headers' Request Line will not contain the scheme or host
+            Save the request to a file.
+            The headers' Request Line will not contain the scheme or host, which is probably not what you want.
             </summary>
             <param name="sFilename">The name of the file to which the request should be saved.</param>
             <param name="bHeadersOnly">TRUE to save only the headers</param>
         </member>
         <member name="M:Fiddler.Session.SaveRequest(System.String,System.Boolean,System.Boolean)">
             <summary>
-            Save the request to a file
+            Save the request to a file. Throws if file cannot be written.
             </summary>
             <param name="sFilename">The name of the file to which the request should be saved.</param>
             <param name="bHeadersOnly">TRUE to save only the headers.</param>
@@ -513,7 +550,7 @@
             </summary>
             <param name="bHeadersOnly">TRUE if only the headers should be be written</param>
             <param name="bIncludeProtocolAndHostWithPath">TRUE if the Scheme and Host should be written in the Request Line</param>
-            <param name="bEncodeIfBinary">TRUE if binary bodies should be encoded in base64 for text-safe transport</param>
+            <param name="bEncodeIfBinary">TRUE if binary bodies should be encoded in base64 for text-safe transport (e.g. used by Composer drag/drop)</param>
             <param name="oFS">The Stream to which the request should be written</param>
             <returns>True if the request was written to the stream. False if the request headers do not exist. Throws on other stream errors.</returns>
         </member>
@@ -569,12 +606,14 @@
         <member name="M:Fiddler.Session.GetRequestBodyEncoding">
             <summary>
             Find the text encoding of the request
+            WARNING: Will not decompress body to scan for indications of the character set
             </summary>
             <returns>Returns the Encoding of the requestBodyBytes</returns>
         </member>
         <member name="M:Fiddler.Session.GetResponseBodyEncoding">
             <summary>
             Find the text encoding of the response
+            WARNING: Will not decompress body to scan for indications of the character set
             </summary>
             <returns>The Encoding of the responseBodyBytes</returns>
         </member>
@@ -747,6 +786,18 @@
             <param name="oRequestHeaders">NB: If you're copying an existing request, use oRequestHeaders.Clone()</param>
             <param name="arrRequestBody">The bytes of the request's body</param>
         </member>
+        <member name="M:Fiddler.Session.BuildFromData(System.Boolean,Fiddler.HTTPRequestHeaders,System.Byte[],Fiddler.HTTPResponseHeaders,System.Byte[],Fiddler.SessionFlags)">
+            <summary>
+            Factory constructor
+            </summary>
+            <param name="bClone"></param>
+            <param name="headersRequest"></param>
+            <param name="arrRequestBody"></param>
+            <param name="headersResponse"></param>
+            <param name="arrResponseBody"></param>
+            <param name="oSF"></param>
+            <returns></returns>
+        </member>
         <member name="M:Fiddler.Session.ExecuteUponAsyncRequest">
             <summary>
             THREADHACK:
@@ -763,6 +814,18 @@
             <summary>
             InnerExecute() implements Fiddler's HTTP Pipeline
             </summary>
+        </member>
+        <member name="M:Fiddler.Session._EnsureStateAtLeast(Fiddler.SessionStates)">
+            <summary>
+            Ensure that the Session's state is >= ss
+            </summary>
+            <param name="ss">TargetState</param>
+        </member>
+        <member name="M:Fiddler.Session._MayRetryWhenReceiveFailed">
+            <summary>
+            May this Session be resent on a different connection because reading of the response did not succeed?
+            </summary>
+            <returns>TRUE if the entire session may be resent on a new connection</returns>
         </member>
         <member name="M:Fiddler.Session._handledAsAutomaticAuth">
             <summary>
@@ -781,6 +844,13 @@
             killing Fiddler.exe.
             </summary>
             <returns></returns>
+        </member>
+        <member name="M:Fiddler.Session.propagateProcessInfo(Fiddler.Session)">
+            <summary>
+            Copies process-owner information from a source session to a destination session. Used during handling of AutoRedirects
+            and auto-Authentications
+            </summary>
+            <param name="sessionFrom"></param>
         </member>
         <member name="M:Fiddler.Session._GetSPNForUri(System.Uri)">
             <summary>
@@ -838,6 +908,11 @@
             <returns>TRUE if there's a Request object and we should continue processing. FALSE if reading the request failed
             *OR* if script or an extension changed the session's State to DONE or ABORTED.
             </returns>
+        </member>
+        <member name="M:Fiddler.Session._HandleFailedReadRequest">
+            <summary>
+            If the executeObtainRequest called failed, we perform cleanup
+            </summary>
         </member>
         <member name="M:Fiddler.Session._isResponseMultiStageAuthChallenge">
             <summary>
@@ -1180,12 +1255,12 @@
              <summary>
              This class holds a specialized memory stream with growth characteristics more suitable for reading from a HTTP Stream.
              The default MemoryStream's Capacity will always grow to 256 bytes, then at least ~2x current capacity up to 1gb, then to the exact length after that.
-             This has two problems:
+             That has two problems:
             
                  The capacity may unnecessarily grow to >85kb, putting the object on the LargeObjectHeap even if we didn't really need 85kb.
                  After the capacity reaches 1gb in length, the capacity growth never exceeds the length, leading to huge reallocations and copies on every write.
             
-             In some cases, the client can "hint" what the proper capacity ultimately needs to be by adding the Header size in bytes to the Content-Length specified size.
+             TODO: In some cases, the client could "hint" what the proper capacity ultimately needs to be by adding the Header size in bytes to the Content-Length specified size.
              </summary>
         </member>
         <member name="M:Fiddler.PipeReadBuffer.HintTotalSize(System.Int32)">
@@ -1525,6 +1600,13 @@
             <param name="sMethod">The Method/Verb</param>
             <returns>TRUE if the HTTP Method MUST contain a request body.</returns>
         </member>
+        <member name="M:Fiddler.Utilities.HTTPMethodIsIdempotent(System.String)">
+            <summary>
+            http://tools.ietf.org/html/draft-ietf-httpbis-p2-semantics-26#section-4.2.2
+            </summary>
+            <param name="sMethod">HTTPMethod</param>
+            <returns>TRUE if the method is deemed idempotent</returns>
+        </member>
         <member name="M:Fiddler.Utilities.HTTPMethodAllowsBody(System.String)">
             <summary>
             Returns true if a request with the specified HTTP Method/Verb may contain a entity body
@@ -1560,7 +1642,9 @@
         </member>
         <member name="M:Fiddler.Utilities.getEntityBodyEncoding(Fiddler.HTTPHeaders,System.Byte[])">
             <summary>
-            Gets (via Headers or Sniff) the provided body's text Encoding. If not found, returns CONFIG.oHeaderEncoding (usually UTF-8). Potentially slow.
+            WARNING: Potentially slow.
+            WARNING: Does not decode the HTTP Response body; if compressed, embedded META or _charset_ will not be checked
+            Gets (via Headers or Sniff) the provided body's text Encoding. If not found, returns CONFIG.oHeaderEncoding (usually UTF-8).
             </summary>
             <param name="oHeaders">HTTP Headers, ideally containing a Content-Type header with a charset attribute.</param>
             <param name="oBody">byte[] containing the entity body.</param>
@@ -1973,8 +2057,10 @@
         </member>
         <member name="M:Fiddler.Utilities.RegExEscape(System.String,System.Boolean,System.Boolean)">
             <summary>
-            This method prepares a string to be converted into a regular expression by escaping special characters.
-            This method was originally meant for parsing WPAD proxy script strings, but is now used in other places. You should probably be using the Static RegEx.Escape method for most purposes instead.
+            This method prepares a string to be converted into a regular expression by escaping special characters and CONVERTING WILDCARDS.
+            This method was originally meant for parsing WPAD proxy script strings. 
+            
+            You typically should use the Static RegEx.Escape method for most purposes, as it doesn't convert "*" into ".*"
             </summary>
             <param name="sString"></param>
             <param name="bAddPrefixCaret"></param>
@@ -2105,7 +2191,7 @@
         <member name="M:Fiddler.Utilities.IsNotExtension(System.String)">
             <summary>
             Checks a DLL's filename for signals that it doesn't contain extensions.
-            TODO: This is only needed because I wasn't smart enough to require that the assembly be named something like Fiddler.*
+            This hack is only needed because I wasn't smart enough to require that the assembly be named something like Fiddler.* in the original design. 
             </summary>
             <param name="sFilename">DLL filename</param>
             <returns>TRUE if we should skip this assembly during enumeration</returns>
@@ -2196,7 +2282,7 @@
         </member>
         <member name="F:Fiddler.SessionStates.AutoTamperRequestBefore">
             <summary>
-            AutoTamperRequest pass 1	 (Only used by IAutoTamper)
+            AutoTamperRequest pass 1	 (IAutoTamper,  OnBeforeRequest script method)
             </summary>
         </member>
         <member name="F:Fiddler.SessionStates.HandTamperRequest">
@@ -2445,7 +2531,7 @@
             <summary>
             Parse out HTTP Header lines.
             </summary>
-            <param name="oHeaders">Header collection to update</param>
+            <param name="oHeaders">Header collection to *append* headers to</param>
             <param name="sHeaderLines">Array of Strings</param>
             <param name="iStartAt">Index into array at which parsing should start</param>
             <param name="sErrors">String containing any errors encountered</param>
@@ -2461,12 +2547,32 @@
             <param name="outWarnings">Any HTTPHeaderParseWarnings discovered during parsing.</param>
             <returns>True, if the parsing was successful.</returns>
         </member>
+        <member name="M:Fiddler.Parser.TakeRequest(System.IO.MemoryStream,Fiddler.HTTPRequestHeaders@,System.Byte[]@)">
+            <summary>
+            Given a MemoryStream, attempts to parse a HTTP Request starting at the current position.
+            </summary>
+            <returns>TRUE if a request could be parsed, FALSE otherwise</returns>
+        </member>
+        <member name="M:Fiddler.Parser.TakeResponse(System.IO.MemoryStream,System.String,Fiddler.HTTPResponseHeaders@,System.Byte[]@)">
+            <summary>
+            Given a MemoryStream, attempts to parse a HTTP Response starting at the current position
+            </summary>
+            <param name="bBodyForbidden">TRUE if the response must not have a body (e.g. because Request method was HEAD)</param>
+            <returns>TRUE if a response could be parsed, FALSE otherwise</returns>
+        </member>
         <member name="M:Fiddler.Parser.ParseRequest(System.String)">
             <summary>
             Parse the HTTP Request into a headers object.
             </summary>
             <param name="sRequest">The HTTP Request string, including *at least the headers* with a trailing CRLFCRLF</param>
             <returns>HTTPRequestHeaders parsed from the string.</returns>
+        </member>
+        <member name="M:Fiddler.Parser._GetHeaderLines(System.String)">
+            <summary>
+            Break headers off, then convert CRLFs into LFs
+            </summary>
+            <param name="sInput"></param>
+            <returns></returns>
         </member>
         <member name="M:Fiddler.Parser.ParseResponse(System.String)">
             <summary>
@@ -2575,7 +2681,8 @@
         </member>
         <member name="P:Fiddler.BasePipe.Connected">
             <summary>
-            Return the Connected status of the base socket
+            Return the Connected status of the base socket. 
+            WARNING: This doesn't work as you might expect; you can see Connected == false when a READ timed out but a WRITE will succeed.
             </summary>
         </member>
         <member name="P:Fiddler.BasePipe.bIsSecured">
@@ -2610,13 +2717,22 @@
         </member>
         <member name="T:Fiddler.frmPrompt">
             <summary>
-            Summary description for frmPrompt.
+            The frmPrompt class is used to get information from the client. It's primarily used by calling one of the <see cref="M:Fiddler.frmPrompt.GetUserString(System.String,System.String,System.String)"/> static functions.
             </summary>
         </member>
         <member name="F:Fiddler.frmPrompt.components">
             <summary>
             Required designer variable.
             </summary>
+        </member>
+        <member name="M:Fiddler.frmPrompt.GetUserString(System.String,System.String,System.String)">
+            <summary>
+            Get a string value from the user.
+            </summary>
+            <param name="sTitle">The title of the dialog</param>
+            <param name="sPrompt">The prompt text</param>
+            <param name="sDefault">The default string value</param>
+            <returns>The value entered by the user (or default, if unmodified)</returns>
         </member>
         <member name="M:Fiddler.frmPrompt.GetUserString(System.String,System.String,System.String,System.Boolean)">
             <summary>
@@ -2625,7 +2741,7 @@
             <param name="sTitle">Title of the dialog</param>
             <param name="sPrompt">The prompt text in the dialog</param>
             <param name="sDefault">The default response</param>
-            <param name="bReturnNullIfCancelled">If true, will return null if user hits cancel.  Else returns sDefault.</param>
+            <param name="bReturnNullIfCancelled">If true, will return null if user hits cancel. Else returns sDefault.</param>
             <returns>The user's result, or null if user cancelled and bReturnNullIfCancelled set.</returns>
         </member>
         <member name="M:Fiddler.frmPrompt.Dispose(System.Boolean)">
@@ -2794,7 +2910,7 @@
         </member>
         <member name="M:Fiddler.DefaultCertificateProvider.LoadCertificateFromWindowsStore(System.String)">
             <summary>
-            Find a certificate from the certificate store, if present.
+            Find (but do not create!) a certificate from the CurrentUser certificate store, if present.
             </summary>
             <remarks>No locks are acquired by this method itself.</remarks>
             <returns>A certificate or /null/</returns>
@@ -2821,9 +2937,15 @@
             The ClientChatter object, exposed as the oRequest object on the Session object, represents a single web request.
             </summary>
         </member>
-        <member name="F:Fiddler.ClientChatter._cbClientReadBuffer">
+        <member name="F:Fiddler.ClientChatter.s_cbClientReadBuffer">
             <summary>
-            Size of buffer passed to pipe.Receive when reading from the client
+            Size of buffer passed to pipe.Receive when reading from the client. 
+            </summary>
+        </member>
+        <member name="F:Fiddler.ClientChatter.stateRead">
+            <summary>
+            Tracks the progress of reading the request from the client. Because of the multi-threaded nature of some users of this
+            field, most will make a local copy before accessing its members.
             </summary>
         </member>
         <member name="F:Fiddler.ClientChatter.pipeClient">
@@ -2841,40 +2963,20 @@
             The session object which owns this ClientChatter
             </summary>
         </member>
-        <member name="F:Fiddler.ClientChatter.m_sHostFromURI">
-            <summary>
-            The host pulled from the URI, usually null except while reading/parsing the request
-            </summary>
-        </member>
-        <member name="F:Fiddler.ClientChatter.m_requestData">
-            <summary>
-            Buffer holds this request's data as it is read from the pipe.
-            </summary>
-        </member>
-        <member name="F:Fiddler.ClientChatter.iEntityBodyOffset">
-            <summary>
-            Offset to first byte of body in m_requestData
-            </summary>
-        </member>
-        <member name="F:Fiddler.ClientChatter.iBodySeekProgress">
-            <summary>
-            Optimization: tracks how far we've previously looked when determining iEntityBodyOffset
-            </summary>
-        </member>
         <member name="M:Fiddler.ClientChatter.#ctor(Fiddler.Session,System.String)">
             <summary>
             Create a ClientChatter object initialized with a set of HTTP headers
             Called primarily when loading session data from a file.
             </summary>
-            <param name="oSession">The session object which will own this request</param>
+            <param name="oSession">The Session object which will own this request</param>
             <param name="sData">The string containing the request data</param>
         </member>
         <member name="M:Fiddler.ClientChatter.ReadRequestBodyFromFile(System.String)">
             <summary>
-            Loads a HTTP request from a file rather than a memory stream. TODO: Why not make this public and have a responsebody version?
+            Loads a HTTP request from a file rather than a memory stream.
             </summary>
             <param name="sFilename">The file to load</param>
-            <returns>TRUE if the file existed.</returns>
+            <returns>TRUE if the file existed. THROWS on most errors other than File-Not-Found</returns>
         </member>
         <member name="M:Fiddler.ClientChatter._calculateExpectedEntityTransferSize">
             <summary>
@@ -2890,20 +2992,27 @@
         </member>
         <member name="M:Fiddler.ClientChatter.TakeEntity">
             <summary>
-            Extract a byte array representing the entity, put any excess bytes back in the socket, delete the requestData stream, and return the entity.
+            Extract byte array representing the entity, put any excess bytes back in the pipe, free the RequestReadState, and return the entity.
             </summary>
-            <returns>Byte array containing the entity</returns>
+            <returns>Byte array containing the entity body</returns>
         </member>
         <member name="M:Fiddler.ClientChatter.FailSession(System.Int32,System.String,System.String)">
             <summary>
             Send a HTTP/XXX Error Message to the Client, calling FiddlerApplication.BeforeReturningError and DoReturningError in FiddlerScript.
-            Note: This method does not poison either the client or server pipe, so if poisoning is desired, it's the caller's responsibility to do that.
+            Note: This method does not poison the Server pipe, so if poisoning is desired, it's the caller's responsibility to do that.
+            Note: Because this method uses Connection: close on the returned response, it has the effect of poisoning the client pipe
             </summary>
             <param name="iError">Response code</param>
             <param name="sErrorStatusText">Response status text</param>
             <param name="sErrorBody">Body of the HTTP Response</param>
         </member>
-        <member name="M:Fiddler.ClientChatter.ParseRequestForHeaders">
+        <member name="M:Fiddler.ClientChatter.BuildAndReturnResponse(System.Int32,System.String,System.String,System.Action{Fiddler.Session})">
+            <summary>
+            Return a HTTP response and signal that the client should close the connection
+            </summary>
+            <param name="delLastChance">A Delegate that fires to give one final chance to modify the Session before calling the DoBeforeReturningError and returning the response</param>
+        </member>
+        <member name="M:Fiddler.ClientChatter._ParseRequestForHeaders">
             <summary>
             Parse the headers from the requestData buffer.  
             Precondition: Call AFTER having set the correct iEntityBodyOffset.
@@ -2913,13 +3022,13 @@
             </summary>
             <returns>TRUE if successful. Frees arrRequest if successful.</returns>
         </member>
-        <member name="M:Fiddler.ClientChatter.isRequestComplete">
+        <member name="M:Fiddler.ClientChatter._isRequestComplete">
             <summary>
             This function decides if the request string represents a complete HTTP request
             </summary>
             <returns></returns>
         </member>
-        <member name="M:Fiddler.ClientChatter.HeadersAvailable">
+        <member name="M:Fiddler.ClientChatter._areHeadersAvailable">
              <summary>
              Scans requestData stream for the \r\n\r\n (or variants) sequence
              which indicates that the header block is complete.
@@ -2932,13 +3041,18 @@
         </member>
         <member name="M:Fiddler.ClientChatter.ReadRequest">
             <summary>
-            Read a complete HTTP Request from the Client.
+            Read a complete request from pipeClient.
             </summary>
             <returns>TRUE, if a request could be read. FALSE, otherwise.</returns>
         </member>
+        <member name="M:Fiddler.ClientChatter._ValidateHostDuringReadRequest">
+            <summary>
+            Verifies that the Hostname specified in the request line is compatible with the HOST header
+            </summary>
+        </member>
         <member name="P:Fiddler.ClientChatter._PeekUploadProgress">
             <summary>
-            Peek at number of bytes received from the client thus far.
+            Count of body bytes read from the client. If no body bytes have yet been read, returns count of header bytes.
             </summary>
         </member>
         <member name="P:Fiddler.ClientChatter.headers">
@@ -2948,18 +3062,58 @@
         </member>
         <member name="P:Fiddler.ClientChatter.bClientSocketReused">
             <summary>
-            Was this request received from a reused client connection?
+            Was this request received from a reused client connection? Looks at SessionFlags.ClientPipeReused flag on owning Session.
             </summary>
         </member>
         <member name="P:Fiddler.ClientChatter.host">
             <summary>
-            Note: This returns the HTTP_HOST header, which may include a trailing port #.
+            Note: This returns the request's HOST header, which may include a trailing port #.
+            If the Host is an IPv6 literal, it will be enclosed in brackets '[' and ']'
             </summary>
         </member>
         <member name="P:Fiddler.ClientChatter.Item(System.String)">
             <summary>
             Simple indexer into the Request Headers object
             </summary>
+        </member>
+        <member name="T:Fiddler.ClientChatter.RequestReaderState">
+            <summary>
+            Discardable State of Read Operation
+            
+            While it is reading a request from the client, the ClientChatter class uses a RequestReaderState object to track
+            the state of the read. This state is discarded when the request has been completely read.
+            </summary>
+        </member>
+        <member name="F:Fiddler.ClientChatter.RequestReaderState.m_sHostFromURI">
+            <summary>
+            The host pulled from the URI
+            </summary>
+        </member>
+        <member name="F:Fiddler.ClientChatter.RequestReaderState.m_requestData">
+            <summary>
+            Buffer holds this request's data as it is read from the pipe.
+            </summary>
+        </member>
+        <member name="F:Fiddler.ClientChatter.RequestReaderState.iEntityBodyOffset">
+            <summary>
+            Offset to first byte of body in m_requestData
+            </summary>
+        </member>
+        <member name="F:Fiddler.ClientChatter.RequestReaderState.m_lngLastChunkInfoOffset">
+            <summary>
+            Optimization: Offset of most recent transfer-encoded chunk
+            </summary>
+        </member>
+        <member name="F:Fiddler.ClientChatter.RequestReaderState.iBodySeekProgress">
+            <summary>
+            Optimization: tracks how far we've previously looked when determining iEntityBodyOffset
+            </summary>
+        </member>
+        <member name="M:Fiddler.ClientChatter.RequestReaderState.GetBytesRead">
+            <summary>
+            Count of body bytes read from the client. If no body bytes have yet been read, returns count of header bytes.
+            </summary>
+            <returns></returns>
         </member>
         <member name="T:Fiddler.PipePool">
             <summary>
@@ -3022,6 +3176,21 @@
             A ClientPipe wraps a socket connection to a client application.
             </summary>
         </member>
+        <member name="F:Fiddler.ClientPipe._sProcessName">
+            <summary>
+            Client process name (e.g. "iexplore")
+            </summary>
+        </member>
+        <member name="F:Fiddler.ClientPipe._iProcessID">
+            <summary>
+            Client process ProcessID
+            </summary>
+        </member>
+        <member name="F:Fiddler.ClientPipe._arrReceivedAndPutBack">
+            <summary>
+            Data which was previously "over-read" from the client. Populated when HTTP-pipelining is attempted
+            </summary>
+        </member>
         <member name="M:Fiddler.ClientPipe.HasDataAvailable">
             <summary>
             Does this Pipe have data (or closure/errors) to read?
@@ -3032,7 +3201,7 @@
             <summary>
             If you previously read more bytes than you needed from this client socket, you can put some back.
             </summary>
-            <param name="toPutback">Array of bytes to put back</param>
+            <param name="toPutback">Array of bytes to put back; now owned by this object</param>
         </member>
         <member name="M:Fiddler.ClientPipe.setReceiveTimeout">
             <summary>
@@ -3155,7 +3324,7 @@
             <param name="assemblyInput">Assembly to scan for transcoders</param>
             <returns>FALSE on obvious errors</returns>
         </member>
-        <member name="M:Fiddler.FiddlerTranscoders.ScanPathForTranscoders(System.String)">
+        <member name="M:Fiddler.FiddlerTranscoders.ScanPathForTranscoders(System.String,System.Boolean)">
             <summary>
             Loads any assembly in the specified path that ends with .dll and does not start with "_", checks that a compatible version requirement was specified, 
             and adds the importer and exporters within to the collection.
@@ -3301,7 +3470,7 @@
         </member>
         <member name="M:Fiddler.WebSocket._ParseAndSendServerMessages">
             This method parses the data in strmServerBytes to extact one or more WebSocket messages. It then sends each message
-            through the pipeline.
+            through the pipeline to the client.
         </member>
         <member name="M:Fiddler.WebSocket.OnReceiveFromClient(System.IAsyncResult)">
             <summary>
@@ -3311,14 +3480,6 @@
         </member>
         <member name="M:Fiddler.WebSocket.OnReceiveFromServer(System.IAsyncResult)">
             <summary>Called when we have received data from the remote host. Incoming data will immediately be forwarded to the local client.</summary>
-            <param name="ar">The result of the asynchronous operation.</param>
-        </member>
-        <member name="M:Fiddler.WebSocket.OnSentToClient(System.IAsyncResult)">
-            <summary>Called when we have sent data to the local client.</summary>
-            <param name="ar">The result of the asynchronous operation.</param>
-        </member>
-        <member name="M:Fiddler.WebSocket.OnSentToServer(System.IAsyncResult)">
-            <summary>Called when we have sent data to the remote host.</summary>
             <param name="ar">The result of the asynchronous operation.</param>
         </member>
         <member name="P:Fiddler.WebSocket.IsOpen">
@@ -3478,6 +3639,12 @@
             The CONFIG object is Fiddler's legacy settings object, introduced before the advent of the Preferences system.
             </summary>
         </member>
+        <member name="F:Fiddler.CONFIG.bQuietMode">
+            <summary>
+            Backing field for the QuietMode property. Controls whether notifications are displayed in a MessageBox.
+            NB: KEEP THIS FIELD DECLARED AT THE TOP OF THE CLASS. We initialize some fields using methods that can check this field.
+            </summary>
+        </member>
         <member name="F:Fiddler.CONFIG.sLVColInfo">
             <summary>
             Cached layout info for columns.
@@ -3544,8 +3711,8 @@
         </member>
         <member name="F:Fiddler.CONFIG.bForwardToGateway">
             <summary>
-            Controls whether Fiddler will send traffic to the previously-set system proxy.
-            OBSOLETE. DO NOT USE. see <see cref="P:Fiddler.CONFIG.UpstreamGateway"/> instead.
+            Will send traffic to an upstream proxy?
+            OBSOLETE -- DO NOT USE. see <see cref="P:Fiddler.CONFIG.UpstreamGateway"/> instead.
             </summary>
         </member>
         <member name="F:Fiddler.CONFIG.oHeaderEncoding">
@@ -3670,6 +3837,11 @@
             Control which processes have HTTPS traffic decryption enabled
             </summary>
         </member>
+        <member name="P:Fiddler.CONFIG.UpstreamGateway">
+            <summary>
+            What mechanism, if any, should Fiddler use to find the upstream proxy/gateway?
+            </summary>
+        </member>
         <member name="P:Fiddler.CONFIG.iReverseProxyForPort">
             <summary>
             Port to which Fiddler should forward inbound requests when configured to run as a Reverse Proxy
@@ -3708,6 +3880,32 @@
         <member name="P:Fiddler.CONFIG.bAllowRemoteConnections">
             <summary>
             Returns true if Fiddler should permit remote connections. Requires restart.
+            </summary>
+        </member>
+        <member name="T:Fiddler.RetryMode">
+            <summary>
+            When may requests be resent on a new connection?
+            </summary>
+        </member>
+        <member name="F:Fiddler.RetryMode.Always">
+            <summary>
+            The request may always be retried.
+            </summary>
+        </member>
+        <member name="F:Fiddler.RetryMode.Never">
+            <summary>
+            The request may never be retried
+            </summary>
+        </member>
+        <member name="F:Fiddler.RetryMode.IdempotentOnly">
+            <summary>
+            The request may only be resent if the HTTP Method is idempotent.
+            This SHOULD be the default per HTTP spec, but this appears to break tons of servers.
+            </summary>
+        </member>
+        <member name="T:Fiddler.GatewayType">
+            <summary>
+            Type of Upstream Gateway
             </summary>
         </member>
         <member name="F:Fiddler.GatewayType.None">
@@ -4117,7 +4315,8 @@
         </member>
         <member name="F:Fiddler.ServerPipe.slAcceptableBadCertificates">
             <summary>
-            User-controlled list of Certificate Serial #s for which Fiddler should not raise a warning about certificate errors
+            User-approved list of Certificate Serial #s for which Fiddler should not raise a warning about certificate errors. 
+            List contains entries of the form [ExpectedCN+ActualCertSerial#]
             </summary>
         </member>
         <member name="F:Fiddler.ServerPipe.dtConnected">
@@ -4220,7 +4419,8 @@
         <member name="M:Fiddler.ServerPipe.AttachClientCertificate(Fiddler.Session,System.Object,System.String,System.Security.Cryptography.X509Certificates.X509CertificateCollection,System.Security.Cryptography.X509Certificates.X509Certificate,System.String[])">
             <summary>
             This method is called by the HTTPS Connection establishment to optionally attach a client certificate to the request.
-            Test Page: https://tower.dartmouth.edu/doip/OracleDatabases.jspx https://roaming.officeapps.live.com/rs/roamingsoapservice.svc
+            Test Page: https://tower.dartmouth.edu/doip/OracleDatabases.jspx or ClientCertificate.ms in Test folder should request on initial connection
+            In contrast, this one: https://roaming.officeapps.live.com/rs/roamingsoapservice.svc appears to try twice (renego)
             </summary>
             <param name="sender"></param>
             <param name="targetHost"></param>
@@ -4256,16 +4456,20 @@
         <member name="P:Fiddler.ServerPipe.isClientCertAttached">
             <summary>
             Returns TRUE if there is an underlying, mutually-authenticated HTTPS stream.
+            
+            WARNING: Results are a bit of a lie. System.NET IsMutuallyAuthenticated == true if a client certificate is AVAILABLE even
+            if that certificate was never SENT to the server.
             </summary>
         </member>
         <member name="P:Fiddler.ServerPipe.isAuthenticated">
             <summary>
-            Returns TRUE if this PIPE is marked as having been authenticated using a Connection-Oriented Auth protocol: NTLM, Kerberos, or HTTPS Client Certificate
+            Returns TRUE if this PIPE is marked as having been authenticated using a Connection-Oriented Auth protocol:
+            NTLM, Kerberos, or HTTPS Client Certificate.
             </summary>
         </member>
         <member name="P:Fiddler.ServerPipe.isConnectedToGateway">
             <summary>
-            Indicates if this pipe is connected to an upstream Proxy.
+            Indicates if this pipe is connected to an upstream (non-SOCKS) Proxy.
             </summary>
         </member>
         <member name="P:Fiddler.ServerPipe.isConnectedViaSOCKS">
@@ -4286,7 +4490,7 @@
         </member>
         <member name="P:Fiddler.ServerPipe.RemoteEndPoint">
             <summary>
-            Returns the IPEndPoint to which this socket is connected
+            Returns the IPEndPoint to which this socket is connected, or null
             </summary>
         </member>
         <member name="T:Fiddler.CodeDescription">
@@ -4347,7 +4551,7 @@
         </member>
         <member name="T:Fiddler.SimpleEventHandler">
             <summary>
-            A simple event handling delegate for functions which accept no parameters.
+            A simple delegate for functions which accept no parameters. (MethodInvoker is the identical Framework version of this delegate)
             </summary>
         </member>
         <member name="T:Fiddler.CalculateReportHandler">
@@ -4392,6 +4596,12 @@
             Gets Fiddler* version info
             </summary>
             <returns>A string indicating the build/flavor of the Fiddler* assembly</returns>
+        </member>
+        <member name="M:Fiddler.FiddlerApplication.SetAppDisplayName(System.String)">
+            <summary>
+            Set the DisplayName for the application
+            </summary>
+            <param name="sAppName">1 to 64 character name to be displayed in error messages, etc</param>
         </member>
         <member name="M:Fiddler.FiddlerApplication.GetDetailedInfo">
             <summary>
@@ -4542,6 +4752,16 @@
             <param name="flagViolation">The SessionFlag which should be set to log this violation</param>
             <param name="bPoisonServerConnection">Set to true to prevent pooling/reuse of server connection</param>
             <param name="sMessage">Information about the problem</param>
+        </member>
+        <member name="F:Fiddler.FiddlerApplication.iPID">
+            <summary>
+            Process ID of Fiddler
+            </summary>
+        </member>
+        <member name="F:Fiddler.FiddlerApplication.sProcessInfo">
+            <summary>
+            processname:PID of Fiddler
+            </summary>
         </member>
         <member name="M:Fiddler.FiddlerApplication._SetXceedLicenseKeys">
             <summary>
@@ -4873,9 +5093,14 @@
             Enables specification of a delegate certificate provider that generates certificates for HTTPS interception.
             </summary>
         </member>
+        <member name="F:Fiddler.CertMaker._lockProvider">
+            <summary>
+            Lock on this object when TestExistenceOf/Create oCertProvider
+            </summary>
+        </member>
         <member name="M:Fiddler.CertMaker.EnsureReady">
             <summary>
-            Ensures that the Certificate Generator is ready.
+            Ensures that the Certificate Generator is ready; thread-safe
             </summary>
         </member>
         <member name="M:Fiddler.CertMaker.LoadOverrideCertProvider">
@@ -4966,7 +5191,7 @@
         </member>
         <member name="M:Fiddler.ProcessHelper.#cctor">
             <summary>
-            Static constructur which registers for cleanup
+            Static constructor which registers for cleanup
             </summary>
         </member>
         <member name="M:Fiddler.ProcessHelper.ScavengeCache">
@@ -5002,97 +5227,6 @@
             </summary>
             <param name="_sProcessName">The ProcessName (e.g. IEXPLORE.EXE)</param>
         </member>
-        <member name="T:Fiddler.WebFormats.JSON">
-            <summary>
-            This class encodes and decodes JSON text http://www.json.org/
-            JSON uses Arrays and Objects, similar to DotNet datatypes ArrayList and Hashtable.
-            All numbers are parsed to doubles.
-            </summary>
-        </member>
-        <member name="M:Fiddler.WebFormats.JSON.JsonDecode(System.String,Fiddler.WebFormats.JSON.JSONParseErrors@)">
-            <summary>
-            Parses the JSON string into an object
-            </summary>
-            <param name="json">A JSON string.</param>
-            <returns>An ArrayList, a Hashtable, a double, a string, null, true, or false</returns>
-        </member>
-        <member name="M:Fiddler.WebFormats.JSON.ParseArray(System.Char[],System.Int32@,Fiddler.WebFormats.JSON.JSONParseErrors@)">
-            <summary>
-            
-            </summary>
-            <param name="json"></param>
-            <param name="index"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Fiddler.WebFormats.JSON.ParseUnquotedIdentifier(System.Char[],System.Int32@,Fiddler.WebFormats.JSON.JSONParseErrors@)">
-            <summary>
-            Similar to ParseString, but exits at the first whitespace or non-identifier character
-            </summary>
-            <param name="json"></param>
-            <param name="index"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Fiddler.WebFormats.JSON.GetLastIndexOfNumber(System.Char[],System.Int32)">
-            <summary>
-            Gets the character index of the end of the JavaScript number we're currently parsing.
-            Numbers are tricky because of exponential notation, etc.
-            </summary>
-            <param name="json"></param>
-            <param name="index"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Fiddler.WebFormats.JSON.isValidIdentifierStart(System.Char)">
-            <summary>
-            Returns TRUE if this character might be the valid start of a JavaScript variable identifier
-            </summary>
-            <remarks>
-            TODO: See http://stackoverflow.com/questions/1661197/valid-characters-for-javascript-variable-names to see how
-            this method doesn't account for all valid variable names, just the most reasonable ones</remarks>
-            <param name="c">The character to test</param>
-            <returns>TRUE if the character may start a JavaScript identifier</returns>
-        </member>
-        <member name="M:Fiddler.WebFormats.JSON.isValidIdentifierChar(System.Char)">
-            <summary>
-            Returns TRUE if this character may validly appear within a JavaScript variable identifier. 
-            TODO: See comment on isValidIdentifierStart() for details about how this is incomplete
-            </summary>
-            <param name="c">The character to test</param>
-            <returns>TRUE if the character may appear within a JavaScript identifier</returns>
-        </member>
-        <member name="M:Fiddler.WebFormats.JSON.JsonEncode(System.Object)">
-            <summary>
-            Converts an IDictionary or IList object graph into a JSON string
-            </summary>
-            <param name="json">A Hashtable or ArrayList</param>
-            <returns>A JSON encoded string, or null if object 'json' is not serializable</returns>
-        </member>
-        <member name="M:Fiddler.WebFormats.JSON.IsNumeric(System.Object)">
-            <summary>
-            Determines if a given object is numeric in any way
-            (can be integer, double, etc). C# has no pretty way to do this.
-            Some were playing with the ValueType class, but the code below works fine.
-            </summary>
-        </member>
-        <member name="T:Fiddler.WebFormats.JSON.JSONParseResult">
-            <summary>
-            Wrapper around JSON Parse output; needed because JScript.NET does not support OUT Parameters
-            </summary>
-        </member>
-        <member name="P:Fiddler.WebFormats.JSON.JSONParseErrors.iErrorIndex">
-            <summary>
-            Index of the last error in the stream
-            </summary>
-        </member>
-        <member name="P:Fiddler.WebFormats.JSON.JSONParseErrors.sWarningText">
-            <summary>
-            Warnings found while parsing JSON
-            </summary>
-        </member>
-        <member name="F:Fiddler.WebFormats.JSON.JSONTokens.IMPLIED_IDENTIFIER_NAME">
-            <summary>
-            This token is a JavaScript Identifier that was not properly quoted as it should have been.
-            </summary>
-        </member>
         <member name="T:Fiddler.WinHTTPAutoProxy">
             <summary>
             The WinHTTPAutoProxy class is used to handle upstream gateways when the client was configured to use WPAD or an Proxy AutoConfig (PAC) script.
@@ -5101,6 +5235,11 @@
         <member name="F:Fiddler.WinHTTPAutoProxy.iAutoProxySuccessCount">
             <summary>
             Indication as to whether AutoProxy information is valid. 0=Unknown/Enabled; 1=Valid/Enabled; -1=Invalid/Disabled
+            </summary>
+        </member>
+        <member name="M:Fiddler.WinHTTPAutoProxy.GetPACFileText(System.String)">
+            <summary>
+            Get the text of the file located at a specified file URI, or null if the URI is non-file or the file is not found.
             </summary>
         </member>
         <member name="M:Fiddler.WinHTTPAutoProxy.ToString">
@@ -5209,6 +5348,21 @@
             </summary>
             <returns>FALSE if any connectoids failed to unhook</returns>
         </member>
+        <member name="T:Fiddler.FTPGateway">
+            <summary>
+            This FTP Gateway class is used if Fiddler is configured as the FTP proxy and there's no upstream gateway configured. 
+            Fiddler must act as a HTTP->FTP protocol converter, which it does by using the .NET FTP classes.
+            </summary>
+        </member>
+        <member name="M:Fiddler.FTPGateway.MakeFTPRequest(Fiddler.Session,Fiddler.PipeReadBuffer,Fiddler.HTTPResponseHeaders@)">
+            <summary>
+            Make a FTP request using the .NET FTPWebRequest class.
+            WARNING: This method will throw.
+            </summary>
+            <param name="oSession">Session bearing an FTP request</param>
+            <param name="buffBody">Returns Response body stream</param>
+            <param name="oRH">Returns generated Response headers</param>
+        </member>
         <member name="M:Fiddler.Winsock.MapLocalPortToProcessId(System.Int32)">
             <summary>
             Map a local port number to the originating process ID
@@ -5243,11 +5397,20 @@
             <summary>
             The ServerChatter object is responsible for transmitting the Request to the destination server and retrieving its Response.
             </summary>
+            <remarks>
+            This class maintains its own MemoryStream buffer that it fills from the created or reused ServerPipe. After it determines that
+            a complete response is present in the MemoryStream, it allows the caller to grab that array using the TakeEntity method. If
+            unsatisfied with the result (e.g. a network error), the caller can call Initialize() and ResendRequest() again.
+            </remarks>
         </member>
-        <member name="F:Fiddler.ServerChatter._cbServerReadBuffer">
+        <member name="F:Fiddler.ServerChatter.s_cbServerReadBuffer">
             <summary>
             Size of buffer passed to pipe.Receive when reading from the server
             </summary>
+            <remarks>
+            PERF: Currently, I use [32768]; but I'd assume bigger buffers are faster. Does ReceiveBufferSize/SO_RCVBUF figure in here?
+            Anecdotal data suggests that current reads rarely fill the full 32k buffer.
+            </remarks>
         </member>
         <member name="F:Fiddler.ServerChatter.pipeServer">
             <summary>
@@ -5264,10 +5427,11 @@
             The inbound headers on this response
             </summary>
         </member>
-        <member name="F:Fiddler.ServerChatter._bWasForwarded">
+        <member name="F:Fiddler.ServerChatter.m_bWasForwarded">
             <summary>
-            Indicates whether this request was sent to the Gateway. 
-            Session should have SessionFlags.SentToGateway set.
+            Indicates whether this request was sent to a (non-SOCKS) Gateway, which influences whether the protocol and host are
+            mentioned in the Request line
+            When True, the session should have SessionFlags.SentToGateway set.
             </summary>
         </member>
         <member name="F:Fiddler.ServerChatter.m_responseData">
@@ -5275,36 +5439,29 @@
             Buffer holds this response's data as it is read from the pipe.
             </summary>
         </member>
-        <member name="F:Fiddler.ServerChatter.m_responseTotalDataCount">
-            <summary>
-            The total count of bytes read for this response. Typically equals m_responseData.Length unless log-drop-response-body flag is set and 
-            Streaming mode is enabled, in which case it will be larger since the m_responseData is cleared after every read.
-            
-            Note: This value is reset to 0 when clearing streamed data. It probably shouldn't be...
-            </summary>
-        </member>
-        <member name="F:Fiddler.ServerChatter.iEntityBodyOffset">
+        <!-- Badly formed XML comment ignored for member "F:Fiddler.ServerChatter.m_responseTotalDataCount" -->
+        <member name="F:Fiddler.ServerChatter.m_iEntityBodyOffset">
             <summary>
             Pointer to first byte of Entity body (or to the start of the next set of headers in the case where there's a HTTP/1xx intermediate header)
             Note: This gets reset to 0 if we're streaming and dropping the response body.
             </summary>
         </member>
-        <member name="F:Fiddler.ServerChatter._iBodySeekProgress">
+        <member name="F:Fiddler.ServerChatter.m_iBodySeekProgress">
             <summary>
             Optimization: tracks how far we've looked into the Request when determining iEntityBodyOffset
             </summary>
         </member>
-        <member name="F:Fiddler.ServerChatter._bLeakedHeaders">
+        <member name="F:Fiddler.ServerChatter.m_bLeakedHeaders">
             <summary>
-            True if HTTP Response headers have been returned to the client.
+            True if final (non-1xx) HTTP Response headers have been returned to the client.
             </summary>
         </member>
-        <member name="F:Fiddler.ServerChatter._lngLeakedOffset">
+        <member name="F:Fiddler.ServerChatter.m_lngLeakedOffset">
             <summary>
             Indicates how much of _responseData buffer has already been streamed to the client
             </summary>
         </member>
-        <member name="F:Fiddler.ServerChatter._lngLastChunkInfoOffset">
+        <member name="F:Fiddler.ServerChatter.m_lngLastChunkInfoOffset">
             <summary>
             Position in responseData of the start of the latest parsed chunk size information
             </summary>
@@ -5330,9 +5487,18 @@
         </member>
         <member name="M:Fiddler.ServerChatter.Initialize(System.Boolean)">
             <summary>
-            Clear the current object and start over
+            Clear the current object and start over; used on a retry
             </summary>
             <param name="bAllocatePipeReadBuffer">If TRUE, allocates a buffer (m_responseData) to read from a pipe. If FALSE, nulls m_responseData.</param>
+        </member>
+        <member name="M:Fiddler.ServerChatter.TakeEntity">
+            <summary>
+            Get the response body byte array from the MemoryStream, then dispose the stream.
+            
+            WARNING: This eats all of the bytes in the Pipe, even if that includes bytes of a 
+            future, as-yet-unrequested response. Fiddler does not pipeline requests, so that works okay for now.
+            For now, the caller should validate that the returned entity is of the expected size (e.g. based on Content-Length)
+            </summary>
         </member>
         <member name="M:Fiddler.ServerChatter.HeadersAvailable">
              <summary>
@@ -5353,14 +5519,15 @@
         </member>
         <member name="M:Fiddler.ServerChatter.GetHeaders">
             <summary>
-            Attempts to get Headers from the stream. If a HTTP/100 Continue block is present, it is removed and ignored.
+            Attempt to pull the final (non-1xx) Headers from the stream. If HTTP/100 messages are found, the method
+            will recurse into itself to find the next set of headers.
             </summary>
         </member>
         <member name="M:Fiddler.ServerChatter._deleteInformationalMessage">
             <summary>
-            Deletes a single header block (at this point, always a HTTP/1xx header block) from the Response stream
-            and adjusts all header-reading state to start over from the top of the stream. If the fiddler.network.leakhttp1xx preference is TRUE,
-            then the 1xx message will have been leaked before calling this method.
+            Deletes a single HTTP/1xx header block from the Response stream
+            and adjusts all header-reading state to start over from the top of the stream. 
+            Note: If 'fiddler.network.leakhttp1xx' is TRUE, then the 1xx message will have been leaked before calling this method.
             </summary>
         </member>
         <member name="M:Fiddler.ServerChatter.releaseServerPipe">
@@ -5375,7 +5542,7 @@
         </member>
         <member name="M:Fiddler.ServerChatter.SIDsMatch(System.Int32,System.String,System.String)">
             <summary>
-            Determines whether a given PIPE is suitable for this session based on this session's target, PID, etc.
+            Determines whether a given PIPE is suitable for a given Session, based on that Session's SID
             </summary>
             <param name="iPID">The Client Process ID, if any</param>
             <param name="sIDSession"></param>
@@ -5398,25 +5565,27 @@
             <summary>
             Performs a SOCKSv4A handshake on the socket
             </summary>
-            <param name="sServerHostname"></param>
-            <param name="iServerPort"></param>
-            <param name="newSocket"></param>
-            <returns></returns>
+        </member>
+        <member name="M:Fiddler.ServerChatter._BuildSOCKS4ConnectHandshakeForTarget(System.String,System.Int32)">
+            <summary>
+            Build the SOCKS4 outbound connection handshake as a byte array.
+            http://en.wikipedia.org/wiki/SOCKS#SOCKS4a
+            </summary>
         </member>
         <member name="M:Fiddler.ServerChatter.SendHTTPCONNECTToGateway(System.Net.Sockets.Socket,System.String,System.Int32,Fiddler.HTTPRequestHeaders)">
-            <summary>
-            TODO: This entire function needs to go away. What we really want to do is generate a new Session that is a CONNECT tunnel and
-            pass it through the normal request processing pipeline. That allows us to automatically authenticate using the user's Windows
-            credentials.
+             <summary>
+             TODO: Almost all of this function needs to go away. What we really want to do is generate a new Session that is a CONNECT tunnel (with the matching UA/proxycreds 
+             and pass it through the normal request processing pipeline. That allows us to automatically authenticate using the user's Windows
+             credentials.
             
-            Sends a CONNECT to the specified socket acting as a gateway proxy and waits for a 200 OK response. This method is used when Fiddler needs
-            a HTTPS Connection through a proxy but the client didn't establish one (e.g. the Request Composer). Note: May THROW
-            </summary>
-            <param name="oGWSocket">The Socket</param>
-            <param name="sHost">The host to which the gateway should connect</param>
-            <param name="iPort">The port to which the gateway should connect</param>
-            <param name="oRH">The HTTPRequestHeaders from the original request</param>
-            <returns>TRUE if a 200 OK was received, FALSE if something else was received, THROWS EXCEPTION on network errors</returns>
+             Sends a CONNECT to the specified socket acting as a gateway proxy and waits for a 200 OK response. This method is used when Fiddler needs
+             a HTTPS Connection through a proxy but the client didn't establish one (e.g. the Request Composer). Note: May THROW
+             </summary>
+             <param name="oGWSocket">The Socket</param>
+             <param name="sHost">The host to which the gateway should connect</param>
+             <param name="iPort">The port to which the gateway should connect</param>
+             <param name="oRH">The HTTPRequestHeaders from the original request</param>
+             <returns>TRUE if a 200 OK was received, FALSE if something else was received, THROWS EXCEPTION on network errors</returns>
         </member>
         <member name="M:Fiddler.ServerChatter.CreateConnectedSocket(System.Net.IPEndPoint[],Fiddler.Session)">
             <summary>
@@ -5428,10 +5597,18 @@
         </member>
         <member name="M:Fiddler.ServerChatter.ResendRequest">
             <summary>
-            Sends the HTTP Request to the upstream server or proxy. If the request is a CONNECT and there's no
+            Sends (or resends) the Request to the server or upstream proxy. If the request is a CONNECT and there's no
             gateway, this method ~only~ establishes the connection to the target, but does NOT send a request.
+            
+            Note: This method will recursively retry if it fails to send on a reused connection.
             </summary>
             <returns>True if connection and send succeeded, False otherwise</returns>
+        </member>
+        <member name="M:Fiddler.ServerChatter._MayRetryWhenSendFailed">
+            <summary>
+            May request be resent on a different connection because the .Send() of the request did not complete?
+            </summary>
+            <returns>TRUE if the request may be resent</returns>
         </member>
         <member name="M:Fiddler.ServerChatter._ReturnFileReadError(System.String,System.String)">
             <summary>
@@ -5449,25 +5626,47 @@
         </member>
         <member name="M:Fiddler.ServerChatter.ReadResponse">
             <summary>
-            Reads the response from the Server Pipe.
+            Reads the response from the ServerPipe.
             </summary>
-            <returns></returns>
+            <returns>TRUE if a response was read</returns>
+        </member>
+        <member name="M:Fiddler.ServerChatter._EnableStreamingIfAppropriate">
+            <summary>
+            When the headers first arrive, update bBufferResponse based on their contents.
+            </summary>
+        </member>
+        <member name="M:Fiddler.ServerChatter.IsWorkableFTPRequest">
+            <summary>
+            Detects whether this is an direct FTP request and if so executes it and returns true.
+            </summary>
+            <returns>FALSE if the request wasn't FTP or wasn't direct.</returns>
+        </member>
+        <member name="M:Fiddler.ServerChatter.ReleaseStreamedData">
+            <summary>
+            Remove from memory the response data that we have already returned to the client.
+            </summary>
+        </member>
+        <member name="M:Fiddler.ServerChatter.ReleaseStreamedChunkedData">
+            <summary>
+            Remove from memory the response data that we have already returned to the client, up to the last chunk
+            size indicator, which we need to keep around for chunk-integrity purposes.
+            </summary>
         </member>
         <member name="M:Fiddler.ServerChatter.LeakResponseBytes">
             <summary>
             Leak the current bytes of the response to client. We wait for the full header
             set before starting to stream for a variety of impossible-to-change reasons.
             </summary>
-            <returns>Returns TRUE if response bytes were leaked, false otherwise (e.g. write error)</returns>
-        </member>
-        <member name="P:Fiddler.ServerChatter.MIMEType">
-            <summary>
-            Get the MIME type (sans Character set or other attributes) from the HTTP Content-Type response header, or String.Empty if missing.
-            </summary>
+            <returns>Returns TRUE if response bytes were leaked, false otherwise (e.g. write error). THROWS if "fiddler.network.streaming.abortifclientaborts" is TRUE</returns>
         </member>
         <member name="P:Fiddler.ServerChatter._PeekDownloadProgress">
             <summary>
             Peek at number of bytes downloaded thus far.
+            </summary>
+        </member>
+        <member name="P:Fiddler.ServerChatter.MIMEType">
+            <summary>
+            Get the MIME type (sans Character set or other attributes) from the HTTP Content-Type response header, or String.Empty if missing.
             </summary>
         </member>
         <member name="P:Fiddler.ServerChatter.iTTFB">
@@ -5509,7 +5708,23 @@
         </member>
         <member name="T:Fiddler.HTTPHeaders">
             <summary>
-            Base class for RequestHeaders and ResponseHeaders 
+            Base class for RequestHeaders and ResponseHeaders
+            </summary>
+        </member>
+        <member name="M:Fiddler.HTTPHeaders.GetReaderLock">
+            <summary>
+            Get the Reader Lock if you plan to enumerate the Storage collection.
+            </summary>
+        </member>
+        <member name="M:Fiddler.HTTPHeaders.GetWriterLock">
+            <summary>
+            Get the Writer Lock if you plan to change the Storage collection.
+            NB: You only need this lock if you plan to change the collection itself; you can party on the items in the collection if you like without locking.
+            </summary>
+        </member>
+        <member name="M:Fiddler.HTTPHeaders.FreeWriterLock">
+            <summary>
+            If you get the Writer lock, Free it ASAP or you're going to hang or deadlock the Session
             </summary>
         </member>
         <member name="F:Fiddler.HTTPHeaders._HeaderEncoding">
@@ -5525,6 +5740,7 @@
         <member name="F:Fiddler.HTTPHeaders.storage">
             <summary>
             Storage for individual HTTPHeaderItems in this header collection
+            NB: Using a list is important, as order can matter
             </summary>
         </member>
         <member name="M:Fiddler.HTTPHeaders.ByteCount">
@@ -5545,6 +5761,20 @@
             </summary>
             <param name="sHeaderName">Header name</param>
             <returns>List of instances of the named header</returns>
+        </member>
+        <member name="M:Fiddler.HTTPHeaders.ToArray">
+            <summary>
+            Copies the Headers to a new array.
+            Prefer this method over the enumerator to avoid cross-thread problems.
+            </summary>
+            <returns>An array containing HTTPHeaderItems</returns>
+        </member>
+        <member name="M:Fiddler.HTTPHeaders.AllValues(System.String)">
+            <summary>
+            Returns all values of the named header in a single string, delimited by commas
+            </summary>
+            <param name="sHeaderName">Header</param>
+            <returns>Each, Header's, Value</returns>
         </member>
         <member name="M:Fiddler.HTTPHeaders.CountOf(System.String)">
             <summary>
@@ -5567,6 +5797,23 @@
             <param name="sValue">Value of the header.</param>
             <returns>Returns the newly-created HTTPHeaderItem.</returns>
         </member>
+        <member name="M:Fiddler.HTTPHeaders.AddRange(System.Collections.Generic.IEnumerable{Fiddler.HTTPHeaderItem})">
+            <summary>
+            Adds one or more headers
+            </summary>
+        </member>
+        <member name="M:Fiddler.HTTPHeaders.GetTokenValue(System.String,System.String)">
+            <summary>
+            Returns the Value from a token in the header. Correctly handles double-quoted strings. Requires semicolon for delimiting tokens
+            Limitation: FAILS if semicolon is in token's value, even if quoted. 
+            FAILS in the case of crazy headers, e.g. Header: Blah="SoughtToken=Blah" SoughtToken=MissedMe
+            
+            We really need a "proper" header parser
+            </summary>
+            <param name="sHeaderName">Name of the header</param>
+            <param name="sTokenName">Name of the token</param>
+            <returns>Value of the token if present; otherwise, null</returns>
+        </member>
         <member name="M:Fiddler.HTTPHeaders.Exists(System.String)">
             <summary>
             Determines if the Headers collection contains a header of the specified name, with any value.
@@ -5574,17 +5821,10 @@
             <param name="sHeaderName">The name of the header to check. (case insensitive)</param>
             <returns>True, if the header exists.</returns>
         </member>
-        <member name="M:Fiddler.HTTPHeaders.GetTokenValue(System.String,System.String)">
-            <summary>
-            Returns the Value from a token in the header. Correctly handles double-quoted strings. Requires semicolon for delimiting tokens
-            </summary>
-            <param name="sHeaderName">Name of the header</param>
-            <param name="sTokenName">Name of the token</param>
-            <returns>Value of the token if present; otherwise, null</returns>
-        </member>
         <member name="M:Fiddler.HTTPHeaders.ExistsAndContains(System.String,System.String)">
             <summary>
-            Determines if the Headers collection contains one or more headers of the specified name, and sHeaderValue is part of one of those Headers' value.
+            Determines if the Headers collection contains one or more headers of the specified name, and 
+            sHeaderValue is part of one of those Headers' value.
             </summary>
             <param name="sHeaderName">The name of the header to check. (case insensitive)</param>
             <param name="sHeaderValue">The partial header value. (case insensitive)</param>
@@ -5592,7 +5832,8 @@
         </member>
         <member name="M:Fiddler.HTTPHeaders.ExistsAndEquals(System.String,System.String)">
             <summary>
-            Determines if the Headers collection contains a header of the specified name, and sHeaderValue=Header's value. Similar to a case-insensitive version of: headers[sHeaderName]==sHeaderValue, although it checks all instances of the named header.
+            Determines if the Headers collection contains a header of the specified name, and sHeaderValue=Header's value. Similar
+            to a case-insensitive version of: headers[sHeaderName]==sHeaderValue, although it checks all instances of the named header.
             </summary>
             <param name="sHeaderName">The name of the header to check. (case insensitive)</param>
             <param name="sHeaderValue">The full header value. (case insensitive)</param>
@@ -5642,6 +5883,16 @@
             Indexer property. Returns HTTPHeaderItem by index. Throws Exception if index out of bounds
             </summary>
         </member>
+        <member name="M:Fiddler.HTTPResponseHeaders.GetEnumerator">
+            <summary>
+            Protect your enumeration using GetReaderLock
+            </summary>
+        </member>
+        <member name="M:Fiddler.HTTPResponseHeaders.System#Collections#IEnumerable#GetEnumerator">
+            <summary>
+            Protect your enumeration using GetReaderLock
+            </summary>
+        </member>
         <member name="M:Fiddler.HTTPResponseHeaders.Clone">
             <summary>
             Clone this HTTPResponseHeaders object and return the result cast to an Object
@@ -5655,8 +5906,15 @@
         </member>
         <member name="F:Fiddler.HTTPResponseHeaders.HTTPResponseStatus">
             <summary>
-            Status text from HTTP Response (e.g. '200 OK').
+            Code AND Description of Response Status (e.g. '200 OK').
             </summary>
+        </member>
+        <member name="M:Fiddler.HTTPResponseHeaders.SetStatus(System.Int32,System.String)">
+            <summary>
+            Update the response status code and text
+            </summary>
+            <param name="iCode">HTTP Status code (e.g. 401)</param>
+            <param name="sDescription">HTTP Status text (e.g. "Access Denied")</param>
         </member>
         <member name="M:Fiddler.HTTPResponseHeaders.#ctor">
             <summary>
@@ -5700,9 +5958,24 @@
             <param name="sHeaders">The header string</param>
             <returns>TRUE if the operation succeeded, false otherwise</returns>
         </member>
+        <member name="P:Fiddler.HTTPResponseHeaders.StatusDescription">
+            <summary>
+            Gets or sets the text associated with the response code (e.g. "OK", "Not Found", etc)
+            </summary>
+        </member>
         <member name="T:Fiddler.HTTPRequestHeaders">
             <summary>
             HTTP Request headers object
+            </summary>
+        </member>
+        <member name="M:Fiddler.HTTPRequestHeaders.GetEnumerator">
+            <summary>
+            Warning: You should protect your enumeration using the GetReaderLock
+            </summary>
+        </member>
+        <member name="M:Fiddler.HTTPRequestHeaders.System#Collections#IEnumerable#GetEnumerator">
+            <summary>
+            Warning: You should protect your enumeration using the GetReaderLock
             </summary>
         </member>
         <member name="M:Fiddler.HTTPRequestHeaders.Clone">
@@ -6377,10 +6650,9 @@
         </member>
         <member name="M:Fiddler.Proxy.WriteAutoProxyPACFile(System.Boolean)">
             <summary>
-            Write a .PAC file that user can point FireFox or some other non-WinINET browser to. This is a crutch
-            that simplifies using Fiddler with non-WinINET clients.
+            Write a .PAC file that user can point their browser at. Some browsers are better-behaved when using a PAC file.
             </summary>
-            <param name="bUseFiddler"></param>
+            <param name="bUseFiddler">TRUE if clients should send traffic to Fiddler.</param>
         </member>
         <member name="M:Fiddler.Proxy.Stop">
             <summary>

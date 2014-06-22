@@ -57,15 +57,10 @@ namespace Imposter
         {
             if (!_isRunning)
             {
-                RecentMatchesBox.Visibility = Visibility.Visible;
-                Matches.Clear();
-
                 StartFiddler();
             }
             else
             {
-                RecentMatchesBox.Visibility = Visibility.Collapsed;
-
                 StopFiddler();
             }
         }
@@ -132,6 +127,14 @@ namespace Imposter
                 MessageBox.Show("You must first edit and save this profile before being able to start the proxy.");
                 return;
             }
+            if (!Directory.Exists(_currentProfile.LocalDirectory))
+            {
+                MessageBox.Show(string.Format("The folder located at '{0}' does not exist. Please correct this error before continuing.", _currentProfile.LocalDirectory));
+                return;
+            }
+
+            RecentMatchesBox.Visibility = Visibility.Visible;
+            Matches.Clear();
 
             _isRunning = true;
             ToggleFields();
@@ -155,6 +158,7 @@ namespace Imposter
 
         public void StopFiddler()
         {
+            RecentMatchesBox.Visibility = Visibility.Collapsed;
             _isRunning = false;
             ToggleFields();
 

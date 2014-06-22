@@ -5,6 +5,7 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.Windows;
+using System.IO;
 
 namespace Imposter
 {
@@ -81,6 +82,28 @@ namespace Imposter
             {
                 MessageBox.Show("Name, Base Url, Local Directory and Port are required fields. Please fill them in before continuing.");
                 return;
+            }
+
+            // Check to make sure the directory we're supposed to be serving from actually exists
+            if (!Directory.Exists(Local.Text))
+            {
+                if (MessageBox.Show("The chosen local directory does not exist. Attempt to create it?", string.Empty, MessageBoxButton.OKCancel) == MessageBoxResult.OK)
+                {
+                    try 
+                    {
+                        Directory.CreateDirectory(Local.Text);
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("Failed to create local directory. This is probably a permissions issue. Please correct this issue before continuining.");
+                        return;
+                    }
+                }
+                else
+                {
+                    // Disallow save if the directory is not valid.
+                    return;
+                }
             }
 
             DialogResult = true;
