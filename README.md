@@ -1,7 +1,13 @@
+# Deprecated
+-----
+This application has been deprecated in favor of [Imposter for Fiddler](/gotdibbs/Imposter.Fiddler) which is an extension for Fiddler I wrote based off of this codebase. There are more features and it is a lot more stable.
+
+-----
+
 Imposter
 ========
 
-Imposter looks for requests matching a base URL and then swaps them for a local file.
+Imposter looks for requests matching a base URL and then swaps them for a matching local file. You can think of it as a version of Fiddler's AutoResponder that handles whole directories instead of single files.
 
 >
 <img alt="ScreenShot" src="https://raw.github.com/gotdibbs/Imposter/master/Screenshot-main.png" style="border: 1px solid #444;" />
