@@ -1,6 +1,6 @@
 # Deprecated
 -----
-This application has been deprecated in favor of [Imposter for Fiddler](/gotdibbs/Imposter.Fiddler) which is an extension for Fiddler I wrote based off of this codebase. There are more features and it is a lot more stable.
+This application has been deprecated in favor of [Imposter for Fiddler](https://github.com/gotdibbs/Imposter.Fiddler) which is an extension for Fiddler I wrote based off of this codebase. There are more features and it is a lot more stable.
 
 -----
 
